@@ -5,10 +5,21 @@
       "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
-      "name": "req",
+      "name": "getHttpReq",
       "methods": [
         "get"
-      ]
+      ],
+      "route": "GetRating/{ratingId}"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "getByIdFromCosmosdb",
+      "databaseName": "%CosmosDBName%",
+      "collectionName": "ratings",
+      "connectionStringSetting": "AzureCosmosDBConnectionString",
+      "PartitionKey": "{ratingId}",
+      "Id": "{ratingId}"
     },
     {
       "type": "http",

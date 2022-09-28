@@ -1,24 +1,44 @@
-import logging
-
 import azure.functions as func
+import json
+from uuid import UUID
+from datetime import datetime
+from pydantic import BaseModel
 
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+class DefaultEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, UUID):
+            return str(obj)
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return json.JSONEncoder.default(self, obj)
 
-    name = req.params.get('name')
-    if not name:
+
+class Rating(BaseModel):
+    id: UUID
+    userId: UUID
+    productId: UUID
+    timestamp: datetime
+    locationName: str
+    rating: int
+    userNotes: str
+
+
+def main(
+    getHttpReq: func.HttpRequest, getByIdFromCosmosdb: func.DocumentList
+) -> func.HttpResponse:
+    ratings = []
+    for data in getByIdFromCosmosdb:
         try:
-            req_body = req.get_json()
-        except ValueError:
+            rating = Rating(**json.loads(data.to_json()))
+            ratings.append(rating)
+        except:
             pass
-        else:
-            name = req_body.get('name')
 
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
+    rating = ratings[0].dict() if len(ratings) > 0 else None
+
+    return func.HttpResponse(
+        json.dumps(rating, cls=DefaultEncoder),
+        mimetype="application/json",
+        status_code=200,
+    )

@@ -5,10 +5,20 @@
       "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
-      "name": "req",
+      "name": "getHttpReq",
       "methods": [
         "get"
-      ]
+      ],
+      "route": "GetRatings/{userId}"
+    },
+    {
+      "type": "cosmosDB",
+      "direction": "in",
+      "name": "listFromCosmosdb",
+      "databaseName": "%CosmosDBName%",
+      "collectionName": "ratings",
+      "connectionStringSetting": "AzureCosmosDBConnectionString",
+      "sqlQuery": "SELECT * from c where c.userId = {userId}"
     },
     {
       "type": "http",
