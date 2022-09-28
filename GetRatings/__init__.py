@@ -1,6 +1,5 @@
 import logging
 import json
-
 import azure.functions as func
 
 def main(req: func.HttpRequest, documents: func.DocumentList) -> str:
