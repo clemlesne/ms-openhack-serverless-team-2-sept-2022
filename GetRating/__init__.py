@@ -1,24 +1,19 @@
 import logging
+import json
 
 import azure.functions as func
 
-
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest, rateitems: func.DocumentList) -> str:
     logging.info('Python HTTP trigger function processed a request.')
-
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
-
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    if not rateitems:
+        logging.warning("ToDo item not found")
     else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
+        logging.info("Found ToDo item, Description=%s",
+                     rateitems[0]['timestamp'])
+
+    #jsonString = json.dumps(rateitems, separators=(',',':'))
+    jsonString = json.dumps({'id': rateitems[0]['id'], 'userId': rateitems[0]['userId'], 'productId': rateitems[0]['productId'], 'timestamp': rateitems[0]['timestamp'], 'locationName': rateitems[0]['locationName'], 'rating': rateitems[0]['rating'], 'userNotes': rateitems[0]['userNotes']}, indent=4, default=str)
+    
+    logging.info(jsonString)
+
+    return func.HttpResponse(f"{jsonString}")
