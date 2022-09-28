@@ -54,4 +54,4 @@ def main(req: func.HttpRequest, doc: func.Out[func.Document]) -> func.HttpRespon
     if jsonString:
         doc.set(func.Document.from_json(jsonString))
 
-    return func.HttpResponse(f"This HTTP triggered function executed successfully. Payload : {jsonString}")
+    return func.HttpResponse(f"{jsonString}")
