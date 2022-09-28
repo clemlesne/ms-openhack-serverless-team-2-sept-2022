@@ -1,0 +1,40 @@
+# Based on: https://github.com/Azure/actions-workflow-samples/blob/a9e4bce81a6c87e56021a480805a521403437eaf/FunctionApp/linux-python-functionapp-on-azure.yml
+
+name: Build and deploy Function App to Azure
+
+on:
+  [push]
+
+env:
+  AZURE_FUNCTIONAPP_NAME: fa-rating-team2-oh-fc
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
+  PYTHON_VERSION: "3.9.14"
+
+jobs:
+  build-and-deploy:
+    # Run on the latest Ubuntu LTS
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: "Checkout GitHub repository"
+        uses: actions/checkout@v3
+      - name: Setup Python ${{ env.PYTHON_VERSION }} environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: "Resolve project dependencies"
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+      - name: Connect to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Deploy Function App"
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
