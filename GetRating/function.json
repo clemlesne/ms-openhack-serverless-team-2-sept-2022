@@ -11,6 +11,17 @@
       ]
     },
     {
+      "type": "cosmosDB",
+      "name": "rateitems",
+      "databaseName": "%CosmosDBName%",
+      "collectionName": "ratings",
+      "createIfNotExists": "false",
+      "connectionStringSetting": "AzureCosmosDBConnectionString",
+      "direction": "in",
+      "Id": "{Query.id}",
+      "PartitionKey": "{Query.id}"
+    },
+    {
       "type": "http",
       "direction": "out",
       "name": "$return"
