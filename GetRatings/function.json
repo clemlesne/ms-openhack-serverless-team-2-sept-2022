@@ -11,6 +11,16 @@
       ]
     },
     {
+      "name": "documents",
+      "type": "cosmosDB",
+      "direction": "in",
+      "databaseName": "%CosmosDBName%",
+      "collectionName": "ratings",
+      "createIfNotExists": "false",
+      "connectionStringSetting": "AzureCosmosDBConnectionString",
+      "sqlQuery": "SELECT * from c where c.userId = {userId}"
+    },
+    {
       "type": "http",
       "direction": "out",
       "name": "$return"
